@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wardrobe Run · Clothes &amp; Demonstratives</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="menu-page">
+  <main class="menu">
+    <header>
+      <h1>👕 Wardrobe Run</h1>
+      <p class="subtitle">Clothes &amp; Demonstratives — <b class="here">this</b> · <b class="here">these</b> ·
+        <b class="there">that</b> · <b class="there">those</b></p>
+    </header>
+
+    <form id="menu-form">
+      <section>
+        <h2>1. Turma</h2>
+        <div class="cards" id="turmas">
+          <label class="choice">
+            <input type="radio" name="turma" value="1" checked>
+            <span><b>Turma 1</b><br>Clothes Shop<br><small>Começa só com palavras, depois this/that e por fim todos. 5 corações e dica com desenho.</small></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="turma" value="2">
+            <span><b>Turma 2</b><br>Shop with Colours<br><small>Cores e frases como “I like those red shoes!”. 4 corações.</small></span>
+          </label>
+          <label class="choice">
+            <input type="radio" name="turma" value="3">
+            <span><b>Turma 3</b><br>Question Blocks<br><small>Vocabulário completo, plataformas que se mexem e blocos THIS IS / THESE ARE / THAT'S / THOSE ARE. 3 corações.</small></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="row">
+        <div>
+          <h2>2. Jogadores</h2>
+          <label class="pill"><input type="radio" name="players" value="2" checked><span>👫 Dupla</span></label>
+          <label class="pill"><input type="radio" name="players" value="1"><span>🧒 1 jogador</span></label>
+        </div>
+        <div>
+          <h2>Cores</h2>
+          <div class="swatches" data-player="1"></div>
+          <div class="swatches" data-player="2"></div>
+        </div>
+      </section>
+
+      <section class="row">
+        <div>
+          <h2>3. Tempo por dupla</h2>
+          <label class="pill"><input type="radio" name="time" value="60"><span>60 s</span></label>
+          <label class="pill"><input type="radio" name="time" value="90" checked><span>90 s</span></label>
+          <label class="pill"><input type="radio" name="time" value="120"><span>120 s</span></label>
+        </div>
+        <div>
+          <h2>Modo “Say it!”</h2>
+          <label class="pill"><input type="checkbox" name="sayit" value="1"><span>🗣️ Falar a frase depois de cada acerto</span></label>
+        </div>
+      </section>
+
+      <section class="row">
+        <div>
+          <h2>4. Meta da turma (acertos somados)</h2>
+          <label class="pill"><input type="radio" name="goal" value="30"><span>30</span></label>
+          <label class="pill"><input type="radio" name="goal" value="50" checked><span>50</span></label>
+          <label class="pill"><input type="radio" name="goal" value="100"><span>100</span></label>
+        </div>
+        <div>
+          <h2>Placar da turma</h2>
+          <p id="class-progress" class="class-progress"></p>
+          <button type="button" class="btn-secondary" id="btn-reset">↺ Zerar placar desta turma</button>
+        </div>
+      </section>
+
+      <button type="submit" class="big-btn play">▶ JOGAR</button>
+    </form>
+
+    <section class="help">
+      <h2>Teclas</h2>
+      <ul>
+        <li><b>Jogador 1:</b> A / D andar · W pular · S descer da plataforma</li>
+        <li><b>Jogador 2:</b> ← / → andar · ↑ pular · ↓ descer da plataforma</li>
+        <li><b>Professora:</b> ENTER começar/próxima dupla · ESPAÇO pausar · R repetir a frase · N pular ordem ·
+          M voz liga/desliga · F tela cheia · ESC menu</li>
+        <li>Controles de videogame USB também funcionam.</li>
+      </ul>
+      <p class="small">Guia completo: <a href="docs/COMO-USAR.md">docs/COMO-USAR.md</a></p>
+    </section>
+  </main>
+
+  <script src="js/menu.js"></script>
+</body>
+</html>

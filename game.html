@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wardrobe Run</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="game-page">
+  <div id="stage">
+    <canvas id="game" width="1280" height="720"></canvas>
+
+    <div id="overlay-ready" class="overlay">
+      <div class="card">
+        <h1>👕 Wardrobe Run</h1>
+        <p class="subtitle" id="ready-subtitle"></p>
+        <div class="controls-help" id="ready-controls"></div>
+        <p class="hint">Ouçam a vendedora e peguem a roupa certa!<br>
+          <b class="here">this / these</b> = perto dela (HERE) &nbsp;·&nbsp;
+          <b class="there">that / those</b> = longe (OVER THERE)</p>
+        <button class="big-btn" id="btn-start">▶ Dupla pronta! (ENTER)</button>
+        <p class="small"><a href="index.html">← Voltar ao menu</a></p>
+      </div>
+    </div>
+
+    <div id="overlay-pause" class="overlay hidden">
+      <div class="card">
+        <h1>⏸ Pausado</h1>
+        <p>Aperte <b>ESPAÇO</b> para continuar.</p>
+        <p class="small">M = voz liga/desliga · R = repetir a frase · N = pular ordem · F = tela cheia · ESC = menu</p>
+      </div>
+    </div>
+
+    <div id="overlay-end" class="overlay hidden">
+      <div class="card">
+        <h1 id="end-title">Time's up!</h1>
+        <div class="stars" id="end-stars"></div>
+        <p class="score-line" id="end-score"></p>
+        <div class="practiced">
+          <p class="small">Frases praticadas:</p>
+          <ul id="end-list"></ul>
+        </div>
+        <div class="class-goal">
+          <div class="bar"><div class="fill" id="end-class-fill"></div></div>
+          <p id="end-class-text"></p>
+        </div>
+        <div class="buttons">
+          <button class="big-btn" id="btn-next">▶ Próxima dupla (ENTER)</button>
+          <a class="btn-secondary" href="index.html">Menu (ESC)</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/vocabulary.js"></script>
+  <script src="js/clothes-art.js"></script>
+  <script src="js/sentences.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/levels.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/round.js"></script>
+  <script src="js/draw.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
