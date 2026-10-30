@@ -82,9 +82,18 @@ window.WR = window.WR || {};
     return { target: target, entities: list };
   };
 
-  // Coloca cada roupa numa vaga livre da sua zona.
-  WR.placeEntities = function (level, entities) {
+  // A vaga fica perto de algum jogador? (para a roupa não nascer em cima dele)
+  function nearPlayer(level, slot, players, size) {
+    var pos = WR.slotPos(level, slot);
+    var box = { x: pos.x - size / 2 - 60, y: pos.y - size - 60, w: size + 120, h: size + 120 };
+    return (players || []).some(function (p) { return WR.overlaps(p, box); });
+  }
+
+  // Coloca cada roupa numa vaga livre da sua zona, longe dos jogadores se der.
+  WR.placeEntities = function (level, entities, players, size) {
     var free = shuffle(level.slots);
+    var far = free.filter(function (s) { return !nearPlayer(level, s, players, size); });
+    free = far.concat(free.filter(function (s) { return far.indexOf(s) < 0; }));
     var placed = [];
     entities.forEach(function (e) {
       var idx = -1;
@@ -116,7 +125,6 @@ window.WR = window.WR || {};
     this.state = 'ready';
     this.entities = [];
     this.order = null;
-    this.orderCount = 0;
     this.orderAge = 0;
     this.lock = 0;
     this.feedback = null;
@@ -125,7 +133,7 @@ window.WR = window.WR || {};
     this.floaters = [];
     this.practiced = [];
     this.shake = 0;
-    this.phase = this.phaseFor(0);
+    this.stage = this.stageFor(0);
     this.listeners = {};
     this.names = [];
   };
@@ -135,9 +143,16 @@ window.WR = window.WR || {};
   R.on = function (name, fn) { this.listeners[name] = fn; };
   R.emit = function (name, data) { if (this.listeners[name]) this.listeners[name](data); };
 
-  R.phaseFor = function (correct) {
+  // Turma 1: só palavras até 8 acertos; depois mistura palavras e this/that.
+  // These/those ficam para as Turmas 2 e 3.
+  R.stageFor = function (correct) {
     if (!this.cfg.phases) return 'all';
-    return correct < 4 ? 'vocab' : correct < 8 ? 'singular' : 'all';
+    return correct < 8 ? 'vocab' : 'mixed';
+  };
+
+  R.modeFor = function (stage) {
+    if (stage === 'mixed') return Math.random() < 0.5 ? 'vocab' : 'singular';
+    return stage;
   };
 
   R.setNames = function (names) {
@@ -152,34 +167,28 @@ window.WR = window.WR || {};
 
   R.nextOrder = function () {
     var turma = this.opts.turma;
-    var question = !!this.cfg.questions && this.orderCount % 2 === 1;
-    var built = WR.buildOrder(turma, this.phase, this.order && this.order.target.item.id);
-    this.entities = WR.placeEntities(this.level, built.entities);
-    this.entities.forEach(function (e, i) { e.state = 'pop'; e.t = -i * 0.05; });
+    var mode = this.modeFor(this.stage);
+    var built = WR.buildOrder(turma, mode, this.order && this.order.target.item.id);
+    this.entities = WR.placeEntities(this.level, built.entities, this.players, this.cfg.itemSize);
+    // armed: só dá para pegar depois que ninguém estiver encostando (roupa que nasce em cima do jogador não conta)
+    this.entities.forEach(function (e, i) { e.state = 'pop'; e.t = -i * 0.05; e.armed = false; });
     var target = built.target;
-    var said = question ? S.question() : S.order(target, this.phase, turma, this.textOpts);
-    this.order = { target: target, mode: this.phase, question: question, text: said.text, speech: said.speech };
-    if (question) this.setupBlocks(target);
-    this.orderCount++;
+    var said = S.order(target, mode, turma, this.textOpts);
+    this.order = { target: target, mode: mode, said: said, text: said.text };
     this.orderAge = 0;
     this.feedback = null;
     this.state = 'playing';
     WR.Audio.pop();
-    WR.Audio.speak(question ? 'Look! Hit the right block!' : said.speech);
+    WR.Audio.speak(said.speech, said.ptSpeech);
   };
 
-  R.setupBlocks = function (target) {
-    var labels = shuffle(S.BLOCKS);
-    this.level.blocks.forEach(function (b, i) { b.label = labels[i]; b.flash = 0; b.bump = 0; });
-    this.order.answer = S.answerBlock(target);
+  // Dica: depois de alguns segundos mostra o desenho e o lado certo da loja.
+  R.hintOn = function () {
+    return !!(this.order && this.cfg.hintAfter && this.orderAge > this.cfg.hintAfter && this.state === 'playing');
   };
 
-  R.activeBlocks = function () {
-    return this.order && this.order.question && this.state === 'playing' ? this.level.blocks : null;
-  };
-
-  R.setFeedback = function (text, good) {
-    this.feedback = { text: text, good: good, t: 0 };
+  R.setFeedback = function (said, good) {
+    this.feedback = { text: said.text, ptText: said.ptText, good: good, t: 0 };
   };
 
   R.addParticles = function (x, y, colors, n) {
@@ -197,8 +206,10 @@ window.WR = window.WR || {};
     this.combo++;
     this.correct++;
     this.score += gained;
-    if (this.practiced.indexOf(said.speech) < 0) this.practiced.push(said.speech);
-    this.setFeedback(said.text, true);
+    if (!this.practiced.some(function (p) { return p.en === said.speech; })) {
+      this.practiced.push({ en: said.speech, pt: said.ptSpeech });
+    }
+    this.setFeedback(said, true);
     var pos = this.entityBox(e);
     this.floaters.push({ text: '+' + gained, x: pos.x + pos.w / 2, y: pos.y, t: 0, color: '#2e7d32' });
     this.addParticles(pos.x + pos.w / 2, pos.y + pos.h / 2, ['#ffca28', '#66bb6a', '#42a5f5', '#ef5350', '#ab47bc'], 36);
@@ -207,26 +218,26 @@ window.WR = window.WR || {};
     e.from = { x: pos.x, y: pos.y };
     this.entities.forEach(function (o) { if (o !== e && o.state !== 'poof') { o.state = 'fade'; o.t = 0; } });
     WR.Audio.good();
-    WR.Audio.speak(said.speech);
+    WR.Audio.speak(said.speech, said.ptSpeech);
     this.emit('correct');
 
-    var newPhase = this.phaseFor(this.correct);
-    if (newPhase !== this.phase) {
-      this.phase = newPhase;
-      this.banner = { text: newPhase === 'singular' ? 'Phase 2: this / that' : 'Phase 3: this, that, these, those', t: 0 };
+    var newStage = this.stageFor(this.correct);
+    if (newStage !== this.stage) {
+      this.stage = newStage;
+      this.banner = { text: 'Phase 2: this ✋ / that 👉', t: 0 };
     }
-    if (this.opts.sayIt) { this.state = 'sayit'; this.sayItText = said.text; this.sayItSpeech = said.speech; }
+    if (this.opts.sayIt) { this.state = 'sayit'; this.sayIt = said; }
     else { this.state = 'lock'; this.lock = 1.8; }
   };
 
-  R.mistake = function (feedbackText, x, y) {
+  R.mistake = function (said, x, y) {
     this.hearts--;
     this.combo = 0;
     this.shake = 0.3;
-    this.setFeedback(feedbackText.text, false);
+    this.setFeedback(said, false);
     this.floaters.push({ text: '-1 ♥', x: x, y: y, t: 0, color: '#c62828' });
     WR.Audio.bad();
-    WR.Audio.speak(feedbackText.speech);
+    WR.Audio.speak(said.speech, said.ptSpeech);
     if (this.hearts <= 0) { this.state = 'ending'; this.lock = 2.2; }
   };
 
@@ -239,27 +250,13 @@ window.WR = window.WR || {};
     this.mistake(S.wrong(this.order.target, e, this.order.mode, this.textOpts), pos.x + pos.w / 2, pos.y);
   };
 
-  R.hitBlock = function (b, player) {
-    b.bump = 0.25;
-    WR.Audio.bump();
-    if (b.flash > 0) return;
-    if (b.label === this.order.answer) {
-      b.flash = 2; b.flashColor = '#43a047';
-      this.success(this.order.target);
-    } else {
-      b.flash = 0.8; b.flashColor = '#e53935';
-      player.hurt = 0.7;
-      this.mistake(S.questionHint(this.order.target), b.x + b.w / 2, b.y + b.h);
-    }
-  };
-
   R.skip = function () {
     if (this.state === 'playing' || this.state === 'lock' || this.state === 'sayit') this.nextOrder();
   };
 
   R.confirmSayIt = function (ok) {
     if (this.state !== 'sayit') return;
-    if (!ok) { WR.Audio.speak(this.sayItSpeech); return; }
+    if (!ok) { WR.Audio.speak(this.sayIt.speech, this.sayIt.ptSpeech); return; }
     this.score += 5;
     this.floaters.push({ text: '+5 🗣️', x: 640, y: 220, t: 0, color: '#6a1b9a' });
     this.state = 'lock';
@@ -268,7 +265,8 @@ window.WR = window.WR || {};
 
   R.repeat = function () {
     if (!this.order) return;
-    WR.Audio.speak(this.state === 'sayit' ? this.sayItSpeech : this.order.speech);
+    var said = this.state === 'sayit' ? this.sayIt : this.order.said;
+    WR.Audio.speak(said.speech, said.ptSpeech);
   };
 
   // Retângulo da roupa (grupo de 1 a 3 desenhos) na tela.
@@ -292,7 +290,6 @@ window.WR = window.WR || {};
     if (this.feedback) this.feedback.t += dt;
     if (this.banner) { this.banner.t += dt; if (this.banner.t > 2.5) this.banner = null; }
     this.shake = Math.max(0, this.shake - dt);
-    this.level.blocks.forEach(function (b) { b.bump = Math.max(0, b.bump - dt); b.flash = Math.max(0, b.flash - dt); });
     this.entities.forEach(function (e) { e.t += dt; if (e.state === 'pop' && e.t > 0.3) e.state = 'idle'; });
     this.entities = this.entities.filter(function (e) {
       return !((e.state === 'poof' && e.t > 0.5) || (e.state === 'fade' && e.t > 0.4));
@@ -302,11 +299,8 @@ window.WR = window.WR || {};
 
     // personagens sempre se mexem (até no 'lock'), para ficar gostoso de jogar
     var single = this.players.length === 1;
-    var blocks = this.activeBlocks();
     this.players.forEach(function (p) {
-      var input = WR.Input.player(p.index, single);
-      var hits = WR.updatePlayer(p, input, self.level, blocks, dt);
-      if (self.state === 'playing' && hits.length) self.hitBlock(hits[0], p);
+      WR.updatePlayer(p, WR.Input.player(p.index, single), self.level, dt);
     });
 
     if (this.state === 'ending') {
@@ -315,8 +309,9 @@ window.WR = window.WR || {};
       return;
     }
     if (this.state === 'lock') {
+      // espera a vendedora terminar de falar (inglês + português), no máximo 4 s a mais
       this.lock -= dt;
-      if (this.lock <= 0) this.nextOrder();
+      if (this.lock <= 0 && (this.lock < -4 || !WR.Audio.speaking())) this.nextOrder();
       return;
     }
     if (this.state !== 'playing') return;
@@ -325,21 +320,19 @@ window.WR = window.WR || {};
     this.timeLeft -= dt;
     if (this.timeLeft <= 0) { this.timeLeft = 0; this.finish(); return; }
 
-    if (this.order.question) return; // nas perguntas, só os blocos contam
-    for (var i = 0; i < this.players.length; i++) {
-      var p = this.players[i];
-      if (p.hurt > 0) continue;
-      for (var j = 0; j < this.entities.length; j++) {
-        var e = this.entities[j];
-        if (e.state !== 'idle') continue;
-        var box = this.entityBox(e);
-        var shrink = { x: box.x + box.w * 0.12, y: box.y + box.h * 0.12, w: box.w * 0.76, h: box.h * 0.76 };
-        if (WR.overlaps(p, shrink)) { this.pick(e, p); if (this.state !== 'playing') return; break; }
-      }
+    for (var j = 0; j < this.entities.length; j++) {
+      var e = this.entities[j];
+      if (e.state !== 'idle') continue;
+      var box = this.entityBox(e);
+      var shrink = { x: box.x + box.w * 0.12, y: box.y + box.h * 0.12, w: box.w * 0.76, h: box.h * 0.76 };
+      var touching = this.players.filter(function (p) { return WR.overlaps(p, shrink); });
+      if (!e.armed) { e.armed = !touching.length; continue; }
+      var picker = touching.filter(function (p) { return p.hurt <= 0; })[0];
+      if (picker) { this.pick(e, picker); if (this.state !== 'playing') return; }
     }
   };
 
-  R.stars = function () { return this.correct >= 12 ? 3 : this.correct >= 8 ? 2 : this.correct >= 4 ? 1 : 0; };
+  R.stars = function () { return this.correct >= 10 ? 3 : this.correct >= 6 ? 2 : this.correct >= 3 ? 1 : 0; };
 
   R.finish = function () {
     if (this.state === 'end') return;

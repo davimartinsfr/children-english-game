@@ -35,8 +35,8 @@ window.WR = window.WR || {};
   function highlightColor(word, colourCoded) {
     if (!colourCoded) return ACCENT;
     var w = word.toLowerCase();
-    if (w.indexOf('this') === 0 || w.indexOf('these') === 0 || w === 'here') return HERE_COLOR;
-    if (w.indexOf('that') === 0 || w.indexOf('those') === 0 || w === 'over there') return THERE_COLOR;
+    if (/^(this|these|here|d?est[ea]s?$|aqui)/.test(w)) return HERE_COLOR;
+    if (/^(that|those|over there|d?aquel[ea]s?$|lá)/.test(w)) return THERE_COLOR;
     return ACCENT;
   }
 
@@ -100,10 +100,76 @@ window.WR = window.WR || {};
     ctx.fillRect(S, F, W - S, H - F);
     ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.fillRect(0, F, W, 5);
+  }
+
+  // Dica: o lado certo da loja (perto / longe) pisca.
+  function drawZoneHint(ctx, round, t) {
+    if (!round.hintOn() || round.order.mode === 'vocab') return;
+    var here = round.order.target.zone === 'here';
+    var x = here ? 0 : WR.SPLIT_X, w = here ? WR.SPLIT_X : WR.W - WR.SPLIT_X;
+    var pulse = 0.5 + 0.5 * Math.sin(t * 6);
+    ctx.save();
+    ctx.fillStyle = here ? 'rgba(255,152,0,' + (0.08 + 0.12 * pulse) + ')' : 'rgba(33,150,243,' + (0.08 + 0.12 * pulse) + ')';
+    ctx.fillRect(x, 56, w, WR.FLOOR_Y - 56);
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = here ? HERE_COLOR : THERE_COLOR;
+    ctx.globalAlpha = 0.4 + 0.6 * pulse;
+    ctx.strokeRect(x + 4, 60, w - 8, WR.FLOOR_Y - 64);
+    ctx.restore();
+  }
+
+  // Cartinhas no chão: cada demonstrative fica no lado da loja a que pertence.
+  var CARDS = [
+    { word: 'THIS', zone: 'here', many: false, pt: 'este · 1 aqui' },
+    { word: 'THESE', zone: 'here', many: true, pt: 'estes · vários aqui' },
+    { word: 'THAT', zone: 'there', many: false, pt: 'aquele · 1 lá' },
+    { word: 'THOSE', zone: 'there', many: true, pt: 'aqueles · vários lá' }
+  ];
+
+  function drawFloor(ctx, round, t) {
+    var S = WR.SPLIT_X, F = WR.FLOOR_Y;
+    // Turma 1 na fase só de palavras: sem cartinhas. Fase this/that: só THIS e THAT.
+    var cards = round.stage === 'vocab' ? [] : round.stage === 'mixed'
+      ? CARDS.filter(function (c) { return !c.many; }) : CARDS;
+    var lit = null;
+    if (round.order && round.order.mode !== 'vocab' && round.state === 'playing' &&
+        (round.cfg.cardFromStart || round.hintOn())) {
+      lit = Sentences.demonstrative(round.order.target).toUpperCase();
+    }
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    outlinedText(ctx, 'HERE ✋', S / 2 + 60, F + 32, 34, '#fff');
-    outlinedText(ctx, 'OVER THERE 👉', S + (W - S) / 2, F + 32, 34, '#fff');
+    var labelX = cards.length ? [140, 790] : [S / 2 + 60, S + (WR.W - S) / 2];
+    outlinedText(ctx, 'HERE ✋ AQUI', labelX[0], F + 32, 28, '#fff');
+    outlinedText(ctx, 'OVER THERE 👉 LÁ', labelX[1], F + 32, 28, '#fff');
+
+    var slotX = { here: [290, 465], there: [925, 1100] };
+    var used = { here: 0, there: 0 };
+    cards.forEach(function (c) {
+      var x = slotX[c.zone][used[c.zone]++], y = F + 6, w = 165, h = 50;
+      var on = lit === c.word;
+      var color = c.zone === 'here' ? HERE_COLOR : THERE_COLOR;
+      ctx.save();
+      if (on) {
+        var k = 1 + 0.05 * Math.sin(t * 8);
+        ctx.translate(x + w / 2, y + h / 2);
+        ctx.scale(k, k);
+        ctx.translate(-x - w / 2, -y - h / 2);
+      }
+      ctx.globalAlpha = lit && !on ? 0.55 : 1;
+      ctx.fillStyle = on ? '#fffde7' : 'rgba(255,255,255,0.85)';
+      rr(ctx, x, y, w, h, 10);
+      ctx.fill();
+      ctx.lineWidth = on ? 5 : 2;
+      ctx.strokeStyle = on ? '#ffd600' : color;
+      ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.font = font(20);
+      ctx.fillText(c.word + ' ' + (c.zone === 'here' ? '✋' : '👉') + (c.many ? '👕👕' : '👕'), x + w / 2, y + 17);
+      ctx.fillStyle = '#37474f';
+      ctx.font = font(14);
+      ctx.fillText(c.pt, x + w / 2, y + 38);
+      ctx.restore();
+    });
   }
 
   function drawPlatforms(ctx, level) {
@@ -124,25 +190,6 @@ window.WR = window.WR || {};
         ctx.textAlign = 'center';
         ctx.fillText('◀ ▶', p.x + p.w / 2, p.y + 11);
       }
-    });
-  }
-
-  function drawBlocks(ctx, round) {
-    if (!round.order || !round.order.question || round.state === 'end') return;
-    round.level.blocks.forEach(function (b) {
-      var up = b.bump > 0 ? Math.sin((b.bump / 0.25) * Math.PI) * 10 : 0;
-      var fill = b.flash > 0 ? b.flashColor : '#ffca28';
-      ctx.fillStyle = fill;
-      rr(ctx, b.x, b.y - up, b.w, b.h, 8);
-      ctx.fill();
-      ctx.strokeStyle = '#6d4c00';
-      ctx.lineWidth = 4;
-      ctx.stroke();
-      ctx.fillStyle = b.flash > 0 ? '#fff' : '#4e342e';
-      ctx.font = font(22);
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(b.label, b.x + b.w / 2, b.y - up + b.h / 2 + 1);
     });
   }
 
@@ -296,18 +343,6 @@ window.WR = window.WR || {};
     ctx.translate(cx, cy);
     ctx.scale(scale, scale);
 
-    // pergunta da Turma 3: a roupa certa pisca
-    if (round.order && round.order.question && e.isTarget && e.state !== 'fly') {
-      var pulse = 0.5 + 0.5 * Math.sin(t * 8);
-      ctx.fillStyle = 'rgba(255,235,59,' + (0.35 + 0.45 * pulse) + ')';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, box.w / 2 + 16, box.h / 2 + 14, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      outlinedText(ctx, '?', 0, -box.h / 2 - 16, 30, '#ffeb3b');
-    }
-
     // sombra
     ctx.fillStyle = 'rgba(0,0,0,0.15)';
     ctx.beginPath();
@@ -352,18 +387,22 @@ window.WR = window.WR || {};
     ctx.restore();
   }
 
-  var PHASE_LABEL = { vocab: 'Phase 1: words', singular: 'Phase 2: this / that', all: 'Phase 3: all' };
+  var PHASE_LABEL = { vocab: 'Phase 1: words', mixed: 'Phase 2: this / that' };
 
   function drawHUD(ctx, round) {
     ctx.fillStyle = '#263238';
     ctx.fillRect(0, 0, WR.W, 56);
-    for (var i = 0; i < round.cfg.hearts; i++) drawHeart(ctx, 14 + i * 36, 12, 32, i < round.hearts);
+    for (var i = 0; i < round.cfg.hearts; i++) drawHeart(ctx, 12 + i * 30, 14, 28, i < round.hearts);
     ctx.textBaseline = 'middle';
     ctx.textAlign = 'left';
     ctx.fillStyle = '#b0bec5';
     ctx.font = font(18);
-    var label = round.cfg.phases ? PHASE_LABEL[round.phase] : 'Turma ' + round.opts.turma + ' · ' + round.cfg.title;
-    ctx.fillText(label, 24 + round.cfg.hearts * 36, 28);
+    var label = round.cfg.phases ? PHASE_LABEL[round.stage] : 'Turma ' + round.opts.turma + ' · ' + round.cfg.title;
+    var lx = 22 + round.cfg.hearts * 30;
+    var ls = 18;
+    ctx.font = font(ls);
+    while (ctx.measureText(label).width > 458 - lx && ls > 11) { ls--; ctx.font = font(ls); }
+    ctx.fillText(label, lx, 28);
 
     // tempo
     var bx = 470, bw = 340, frac = round.timeLeft / round.opts.time;
@@ -401,9 +440,12 @@ window.WR = window.WR || {};
     }
   }
 
+  // Balão da vendedora: a ordem em inglês, a tradução em português embaixo
+  // e, depois de pegar uma roupa, o ✔ / ✘ com a explicação (também nas duas línguas).
   function drawOrder(ctx, round) {
     if (!round.order) return;
-    var x = 160, y = 64, w = WR.W - 176, h = 88;
+    var fb = round.feedback;
+    var x = 160, y = 64, w = WR.W - 176, h = fb ? 140 : 92;
     ctx.fillStyle = '#ffffff';
     rr(ctx, x, y, w, h, 18);
     ctx.fill();
@@ -411,14 +453,14 @@ window.WR = window.WR || {};
     ctx.strokeStyle = '#7e57c2';
     ctx.stroke();
     var coded = !!round.cfg.colourCoded;
-    var hasHint = round.cfg.hintAfter && round.orderAge > round.cfg.hintAfter && !round.order.question &&
-      round.state === 'playing';
+    var hasHint = round.hintOn();
     var textW = w - (hasHint ? 140 : 40);
     var centerX = x + 20 + textW / 2;
-    richText(ctx, round.order.text, centerX, y + (round.feedback ? 30 : h / 2), round.feedback ? 34 : 42, textW, '#263238', coded);
-    if (round.feedback) {
-      richText(ctx, (round.feedback.good ? '✔ ' : '✘ ') + round.feedback.text, centerX, y + 66, 26, textW,
-        round.feedback.good ? '#2e7d32' : '#c62828', coded);
+    richText(ctx, round.order.text, centerX, y + 30, fb ? 32 : 38, textW, '#263238', coded);
+    richText(ctx, round.order.said.ptText, centerX, y + (fb ? 58 : 68), fb ? 18 : 22, textW, '#78909c', coded);
+    if (fb) {
+      richText(ctx, (fb.good ? '✔ ' : '✘ ') + fb.text, centerX, y + 90, 24, textW, fb.good ? '#2e7d32' : '#c62828', coded);
+      richText(ctx, fb.ptText, centerX, y + 117, 18, textW, fb.good ? '#558b2f' : '#b71c1c', coded);
     }
     if (hasHint) {
       var t = round.order.target;
@@ -427,7 +469,7 @@ window.WR = window.WR || {};
       ctx.font = font(12);
       ctx.fillStyle = '#90a4ae';
       ctx.textAlign = 'center';
-      ctx.fillText('hint', x + w - 64, y + 82);
+      ctx.fillText('hint', x + w - 64, y + 84);
     }
   }
 
@@ -435,7 +477,7 @@ window.WR = window.WR || {};
     if (round.state !== 'sayit') return;
     ctx.fillStyle = 'rgba(0,0,0,0.45)';
     ctx.fillRect(0, 0, WR.W, WR.H);
-    var x = 290, y = 230, w = 700, h = 240;
+    var x = 290, y = 220, w = 700, h = 270;
     ctx.fillStyle = '#fff';
     rr(ctx, x, y, w, h, 24);
     ctx.fill();
@@ -447,11 +489,12 @@ window.WR = window.WR || {};
     ctx.fillStyle = '#6a1b9a';
     ctx.font = font(34);
     ctx.fillText('🗣️ Say it together!', x + w / 2, y + 50);
-    richText(ctx, round.sayItText, x + w / 2, y + 120, 48, w - 60, '#263238', !!round.cfg.colourCoded);
+    richText(ctx, round.sayIt.text, x + w / 2, y + 115, 48, w - 60, '#263238', !!round.cfg.colourCoded);
+    richText(ctx, round.sayIt.ptText, x + w / 2, y + 170, 26, w - 60, '#78909c', !!round.cfg.colourCoded);
     ctx.textAlign = 'center';
     ctx.font = font(18, false);
     ctx.fillStyle = '#546e7a';
-    ctx.fillText('Professora: ENTER = falou certo ✔    ·    BACKSPACE = ouvir de novo 🔁', x + w / 2, y + 196);
+    ctx.fillText('Professora: ENTER = falou certo ✔    ·    BACKSPACE = ouvir de novo 🔁', x + w / 2, y + 228);
   }
 
   function drawBanner(ctx, round) {
@@ -473,8 +516,9 @@ window.WR = window.WR || {};
     ctx.save();
     if (round.shake > 0) ctx.translate((Math.random() - 0.5) * 14 * round.shake / 0.3, (Math.random() - 0.5) * 10 * round.shake / 0.3);
     drawBackground(ctx, round);
+    drawZoneHint(ctx, round, t);
+    drawFloor(ctx, round, t);
     drawPlatforms(ctx, round.level);
-    drawBlocks(ctx, round);
     drawNPC(ctx, round, t);
     round.entities.forEach(function (e) { drawEntity(ctx, round, e, t); });
     round.players.forEach(function (p) { drawKid(ctx, p, t); });

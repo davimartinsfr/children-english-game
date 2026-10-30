@@ -4,20 +4,21 @@ Jogo de plataforma cooperativo para praticar vocabulário de inglês (**clothes*
 
 O vocabulário vem das folhas de atividade da aula "Clothes and Demonstratives" das Turmas 1, 2 e 3 (Centro Comunitário Sal da Terra).
 
-![Turma 1: "I want these hats!"](docs/img/turma1.png)
+![Turma 1: "I want that T-shirt!"](docs/img/turma1.png)
 
 ## Como funciona
 
-- Uma **vendedora** fica no lado esquerdo da tela e dá ordens: *"Bring me **those** boots!"*. Ela também fala as ordens em voz alta.
-- Tudo o que está **perto dela (HERE ✋)** é **this/these**. Tudo o que está **longe (OVER THERE 👉)** é **that/those**.
-- Duas crianças jogam **juntas**, no mesmo teclado, pegando a roupa certa. Se pegarem a errada, perdem um coração e o jogo explica o erro.
+- Uma **vendedora** fica no lado esquerdo da tela e dá ordens: *"Bring me **those** boots!"*. Ela fala cada frase em voz alta **em inglês e logo depois em português** (*"Me traga aquelas botas!"*), e a tradução também aparece escrita embaixo.
+- Tudo o que está **perto dela (HERE ✋ AQUI)** é **this/these**. Tudo o que está **longe (OVER THERE 👉 LÁ)** é **that/those**. No chão de cada lado ficam cartinhas de "cola": *THIS = este · 1 aqui*, *THESE = estes · vários aqui*, *THAT = aquele · 1 lá*, *THOSE = aqueles · vários lá*.
+- Se a dupla demora, o jogo dá uma dica: mostra o desenho da roupa, pisca o lado certo da loja e acende a cartinha certa.
+- Duas crianças jogam **juntas**, no mesmo teclado, pegando a roupa certa. Se pegarem a errada, perdem um coração e o jogo explica o que estava errado (o lugar, a quantidade ou a roupa), em inglês e em português.
 - Cada dupla joga **90 segundos**. Depois é a vez da **próxima dupla**. Antes de jogar, cada dupla **escreve os nomes**, e o resultado entra no **ranking das duplas da turma**. Cada turma tem o seu ranking, sem misturar.
 
 | Turma | Modo | O que pratica |
 |---|---|---|
-| 1 | Clothes Shop | Primeiro só as palavras (*Get the hat!*), depois *this/that*, depois os quatro. Dica com desenho. |
-| 2 | Shop with Colours | Cores + demonstratives (*I like those red shoes!*) |
-| 3 | Question Blocks | Vocabulário completo, plataformas que se mexem e blocos **THIS IS / THESE ARE / THAT'S / THOSE ARE** |
+| 1 | Clothes Shop | Primeiro só as palavras (*Get the hat!*), depois mistura palavras com *this/that*. Sem *these/those*. 8 corações. |
+| 2 | Shop with Colours | Cores + demonstratives (*I like those red shoes!*). 6 corações. |
+| 3 | Big Shop | Vocabulário completo e plataformas que se mexem devagar. 5 corações. |
 
 | Turma 2 | Turma 3 |
 |---|---|
@@ -57,13 +58,13 @@ index.html            menu (turma, jogadores, opções)
 game.html             tela do jogo
 css/style.css
 js/vocabulary.js      vocabulário por turma (editável)
-js/sentences.js       todas as frases: ordens, acertos, explicação dos erros
+js/sentences.js       todas as frases (inglês + português): ordens, acertos, explicação dos erros
 js/clothes-art.js     desenhos das roupas (SVG gerado no código, com troca de cor)
 js/levels.js          configuração das turmas e layout das plataformas
 js/engine.js          controles (teclado/controle) e física
 js/round.js           regras da rodada (ordens, pegadinhas, pontos, corações)
 js/draw.js            desenho no canvas
-js/audio.js           voz (speechSynthesis) e efeitos sonoros (Web Audio)
+js/audio.js           voz em inglês + português (speechSynthesis) e efeitos sonoros (Web Audio)
 js/ranking.js         ranking das duplas, separado por turma
 js/main.js            loop da tela do jogo e telas sobrepostas
 js/menu.js            menu

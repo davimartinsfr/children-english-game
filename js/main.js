@@ -108,8 +108,9 @@
       return '<span class="' + (i <= res.stars ? 'on' : 'off') + '">★</span>';
     }).join('');
     $('end-score').textContent = '⭐ ' + res.score + ' pontos · ' + res.correct + (res.correct === 1 ? ' acerto' : ' acertos');
-    $('end-list').innerHTML = res.practiced.slice(-6).map(function (s) { return '<li>' + s + '</li>'; }).join('') ||
-      '<li>—</li>';
+    $('end-list').innerHTML = res.practiced.slice(-6).map(function (s) {
+      return '<li>' + s.en + ' <span class="pt">' + s.pt + '</span></li>';
+    }).join('') || '<li>—</li>';
 
     var saved = WR.Ranking.add(opts.turma, { names: round.names, score: res.score, correct: res.correct, time: opts.time });
     var rank = '';
