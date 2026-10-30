@@ -103,6 +103,7 @@ a { color: var(--purple); }
 .score-line { font-size: 1.5em; font-weight: bold; margin: 0.3em 0; }
 .practiced ul { list-style: none; padding: 0; margin: 0.2em 0 0.6em; font-size: 1.2em; }
 .practiced li { margin: 0.15em 0; }
+.practiced li .pt { display: block; font-size: 0.8em; color: #78909c; }
 .buttons { display: flex; gap: 1em; justify-content: center; align-items: center; flex-wrap: wrap; }
 
 /* ---------- Nomes e ranking ---------- */

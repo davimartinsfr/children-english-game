@@ -5,7 +5,7 @@ Todas as palavras ficam num único arquivo: **`js/vocabulary.js`**. Dá para abr
 ## Formato de uma palavra
 
 ```js
-{ id: 'cap', word: 'cap', plural: 'caps', art: 'cap', color: '#2e7d32', turmas: [1, 2, 3] },
+{ id: 'cap', word: 'cap', plural: 'caps', art: 'cap', color: '#2e7d32', pt: 'boné', ptPlural: 'bonés', ptGender: 'm', turmas: [1, 2, 3] },
 ```
 
 | Campo | O que é |
@@ -16,6 +16,10 @@ Todas as palavras ficam num único arquivo: **`js/vocabulary.js`**. Dá para abr
 | `alwaysPlural: true` | use **no lugar de `plural`** para palavras que só existem no plural (jeans, shorts, trousers, shoes, sunglasses...). O jogo vai dizer "these/those are jeans" e nunca "a jeans". |
 | `art` | qual desenho usar (lista abaixo) |
 | `color` | cor do desenho, em código hexadecimal (ex.: `#e53935` = vermelho) |
+| `pt` | a palavra em português (singular), para a vendedora traduzir |
+| `ptPlural` | o plural em português |
+| `ptAlwaysPlural: true` | use **no lugar de `ptPlural`** quando em português também é sempre plural (*sapatos*, *meias*, *óculos de sol*). Se em português é singular (*calça jeans*), não coloque nem `ptPlural` nem `ptAlwaysPlural`. |
+| `ptGender` | `'m'` (o chapéu, este, aquele) ou `'f'` (a saia, esta, aquela) |
 | `turmas` | em quais turmas a palavra aparece |
 
 ## Exemplos
@@ -27,7 +31,7 @@ Colocar o *tie* (gravata) na Turma 1 usando o desenho de outra roupa não fica b
 Colocar *sweater* também na Turma 1:
 
 ```js
-{ id: 'sweater', word: 'sweater', plural: 'sweaters', art: 'sweater', color: '#43a047', turmas: [1, 2, 3] },
+{ id: 'sweater', word: 'sweater', plural: 'sweaters', art: 'sweater', color: '#43a047', pt: 'suéter', ptPlural: 'suéteres', ptGender: 'm', turmas: [1, 2, 3] },
 ```
 
 ## Desenhos disponíveis (`art`)
@@ -41,6 +45,7 @@ Duas palavras podem usar o mesmo desenho (como *sweater* e *jumper*). O jogo nun
 ## Cuidados
 
 - Mantenha as vírgulas e as aspas simples `'...'` iguais às outras linhas.
-- Cada turma precisa de **pelo menos 7 palavras** com desenhos diferentes.
+- Cada turma precisa de **pelo menos 5 palavras** com desenhos diferentes.
+- As cores (`colours`, no fim do arquivo) também têm `pt` com as quatro formas: `['vermelho', 'vermelha', 'vermelhos', 'vermelhas']`.
 - Depois de salvar, recarregue o jogo no navegador (F5).
 - Se o jogo parar de abrir, provavelmente faltou uma vírgula ou aspa. Compare com as linhas de cima ou baixe o ZIP de novo.

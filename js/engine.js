@@ -87,10 +87,9 @@ WR.makePlayer = function (index, color, x) {
 
 function overlapX(a, x, w) { return a.x + a.w > x && a.x < x + w; }
 
-// Move um personagem e devolve os blocos em que ele bateu a cabeça.
-WR.updatePlayer = function (p, input, level, blocks, dt) {
+// Move um personagem.
+WR.updatePlayer = function (p, input, level, dt) {
   var P = WR.PHYS;
-  var hits = [];
 
   // anda junto com a plataforma em que está
   if (p.onGround && p.ground && p.ground.dx) p.x += p.ground.dx;
@@ -118,24 +117,11 @@ WR.updatePlayer = function (p, input, level, blocks, dt) {
 
   p.vy = Math.min(P.maxFall, p.vy + P.gravity * dt);
 
-  var prevTop = p.y, prevBottom = p.y + p.h;
+  var prevBottom = p.y + p.h;
   p.x = Math.max(0, Math.min(WR.W - p.w, p.x + p.vx * dt));
   p.y += p.vy * dt;
   p.onGround = false;
   p.ground = null;
-
-  // blocos: batida de cabeça por baixo e dá para ficar em cima
-  (blocks || []).forEach(function (b) {
-    if (!overlapX(p, b.x, b.w)) return;
-    var bottom = b.y + b.h;
-    if (p.vy < 0 && prevTop >= bottom - 1 && p.y < bottom) {
-      p.y = bottom;
-      p.vy = 80;
-      hits.push(b);
-    } else if (p.vy >= 0 && prevBottom <= b.y + 1 && p.y + p.h >= b.y) {
-      p.y = b.y - p.h; p.vy = 0; p.onGround = true;
-    }
-  });
 
   // plataformas: só seguram quem está caindo de cima
   if (p.drop <= 0 && p.vy >= 0) {
@@ -151,7 +137,6 @@ WR.updatePlayer = function (p, input, level, blocks, dt) {
   if (p.y + p.h >= WR.FLOOR_Y) {
     p.y = WR.FLOOR_Y - p.h; p.vy = 0; p.onGround = true; p.ground = null;
   }
-  return hits;
 };
 
 WR.overlaps = function (a, b) {

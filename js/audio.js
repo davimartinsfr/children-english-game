@@ -1,13 +1,14 @@
 /*
- * Voz (pronúncia em inglês usando a voz do próprio computador) e efeitos sonoros.
- * Nada é baixado da internet. Se o computador não tiver voz em inglês,
- * o jogo continua funcionando, só sem a fala.
+ * Voz (inglês e depois português, usando as vozes do próprio computador) e efeitos sonoros.
+ * Nada é baixado da internet. Se o computador não tiver voz em inglês ou em
+ * português, o jogo continua funcionando, só sem aquela fala.
  */
 window.WR = window.WR || {};
 
 WR.Audio = (function () {
   var ctx = null;
   var voice = null;
+  var ptVoice = null;
   var synth = window.speechSynthesis || null;
 
   function chooseVoice() {
@@ -16,6 +17,16 @@ WR.Audio = (function () {
     voice = voices.filter(function (v) { return /^en[-_]GB/i.test(v.lang); })[0] ||
       voices.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0] ||
       voices.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
+    ptVoice = voices.filter(function (v) { return /^pt[-_]BR/i.test(v.lang); })[0] ||
+      voices.filter(function (v) { return /^pt/i.test(v.lang); })[0] || null;
+  }
+
+  function utter(text, v, lang, rate) {
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = v ? v.lang : lang;
+    if (v) u.voice = v;
+    u.rate = rate;
+    return u;
   }
   if (synth) {
     chooseVoice();
@@ -49,16 +60,18 @@ WR.Audio = (function () {
       } catch (e) { ctx = null; }
     },
 
-    speak: function (text) {
+    // Fala a frase em inglês e, logo depois, a mesma frase em português.
+    speak: function (text, ptText) {
       if (!synth || !this.voiceOn) return;
       try {
         synth.cancel();
-        var u = new SpeechSynthesisUtterance(text);
-        u.lang = voice ? voice.lang : 'en-GB';
-        if (voice) u.voice = voice;
-        u.rate = this.rate;
-        synth.speak(u);
+        synth.speak(utter(text, voice, 'en-GB', this.rate));
+        if (ptText) synth.speak(utter(ptText, ptVoice, 'pt-BR', 1));
       } catch (e) { /* sem voz: segue o jogo */ }
+    },
+
+    speaking: function () {
+      try { return !!(synth && this.voiceOn && (synth.speaking || synth.pending)); } catch (e) { return false; }
     },
 
     stopSpeech: function () { try { if (synth) synth.cancel(); } catch (e) { /* ignore */ } },

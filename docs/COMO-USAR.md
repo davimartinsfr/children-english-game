@@ -5,10 +5,10 @@
 1. Baixe o jogo: no GitHub, botão verde **Code** → **Download ZIP**.
 2. Extraia o ZIP numa pasta fácil de achar (por exemplo, na Área de Trabalho).
 3. Dê **dois cliques em `index.html`**. Se perguntar com qual programa abrir, escolha **Chrome** ou **Edge**.
-4. Teste o som: ao começar uma rodada, a vendedora fala a ordem em inglês.
+4. Teste o som: ao começar uma rodada, a vendedora fala a ordem em inglês e depois em português.
    - Se não falar, confira o volume.
-   - No Windows, a voz em inglês já vem instalada na maioria dos computadores.
-   - Se faltar, procure em *Configurações → Hora e idioma → Fala → Adicionar vozes → English*.
+   - No Windows, as vozes em inglês e em português já vêm instaladas na maioria dos computadores.
+   - Se faltar alguma, procure em *Configurações → Hora e idioma → Fala → Adicionar vozes → English* (ou *Português (Brasil)*).
 
 O jogo **não precisa de internet**.
 
@@ -31,8 +31,9 @@ Com 16 alunos são 8 duplas de 90 segundos: cerca de 15 minutos.
 ## Como envolver a turma toda
 
 - **Quem está esperando ajuda:** a turma pode gritar "HERE!" ou "OVER THERE!" para ajudar a dupla.
+- **Cartinhas no chão:** do lado de perto ficam *THIS (este · 1 aqui)* e *THESE (estes · vários aqui)*; do lado de longe, *THAT (aquele · 1 lá)* e *THOSE (aqueles · vários lá)*. É só perguntar: "perto ou longe? um ou vários?".
 - **Ranking das duplas:** cada dupla vê sua posição no fim da rodada. Dá para chamar uma dupla de novo para tentar subir no ranking.
-- **Modo "Say it!"** (marque no menu): depois de cada acerto, o jogo para e mostra a frase ("Those are boots!").
+- **Modo "Say it!"** (marque no menu): depois de cada acerto, o jogo para e mostra a frase ("Those are boots!"), com a tradução embaixo.
   - A dupla, ou a turma toda, fala em voz alta.
   - Você aperta **ENTER** se falaram certo (+5 pontos).
   - Aperte **BACKSPACE** para ouvir a frase de novo.
@@ -52,15 +53,14 @@ Com 16 alunos são 8 duplas de 90 segundos: cerca de 15 minutos.
 
 ## O que cada turma pratica
 
-- **Turma 1:** o jogo começa fácil e vai subindo de fase sozinho.
+- **Turma 1:** foco no vocabulário, com 8 corações.
   1. **Fase 1:** só a palavra ("Get the hat!").
-  2. **Fase 2:** *this / that* (4 acertos depois).
-  3. **Fase 3:** *this, that, these, those* (8 acertos depois).
-  - Depois de 5 segundos sem acertar, aparece o desenho da roupa como dica.
-  - Cores ajudam: **laranja = this/these (perto)**, **azul = that/those (longe)**.
-- **Turma 2:** entram as cores ("I like those **red** shoes!"). Atenção: pode ter a mesma roupa em outra cor!
-- **Turma 3:** vocabulário completo da Sarah e do Mark, plataformas que se mexem e **perguntas com blocos**.
-  - Uma roupa pisca e a dupla bate a cabeça no bloco certo: **THIS IS / THESE ARE / THAT'S / THOSE ARE**.
+  2. **Fase 2** (depois de 8 acertos): mistura palavras com *this / that*. *These / those* ficam para as outras turmas.
+  - A cartinha certa (THIS ou THAT) já aparece acesa no chão.
+  - Depois de 3 segundos sem acertar, aparece o desenho da roupa e o lado certo da loja pisca.
+- **Turma 2:** entram as cores ("I like those **red** shoes!"). Atenção: pode ter a mesma roupa em outra cor! 6 corações, dica depois de 4 segundos.
+- **Turma 3:** vocabulário completo da Sarah e do Mark e plataformas que se mexem devagar. 5 corações, dica depois de 5 segundos.
+- Em todas: **laranja = this/these (perto)**, **azul = that/those (longe)**, também nas palavras em português (*este / aquele*).
 
 ## Ranking das duplas
 
@@ -75,5 +75,5 @@ Com 16 alunos são 8 duplas de 90 segundos: cerca de 15 minutos.
 ## Problemas comuns
 
 - **Não aparece nada / tela preta:** use Chrome ou Edge atualizados.
-- **A voz não fala:** confira o volume e aperte **M** (pode estar desligada). Se o computador não tiver voz em inglês, o jogo funciona sem fala; você pode ler a ordem em voz alta.
+- **A voz não fala:** confira o volume e aperte **M** (pode estar desligada). Se o computador não tiver voz em inglês ou em português, o jogo funciona sem aquela fala; você pode ler a frase em voz alta (ela está escrita nas duas línguas).
 - **As teclas não funcionam:** clique uma vez dentro da tela do jogo.

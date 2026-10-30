@@ -13,39 +13,41 @@ WR.SPLIT_X = 640;
 WR.TURMAS = {
   1: {
     title: 'Clothes Shop',
-    hearts: 5,
-    itemsPerOrder: 6,
-    itemSize: 72,
-    phases: true,          // fase 1 só vocabulário, fase 2 this/that, fase 3 todos
+    hearts: 8,
+    itemsPerOrder: 4,
+    itemSize: 84,
+    phases: true,          // fase 1 só vocabulário, fase 2 mistura vocabulário e this/that (sem these/those)
     colourCoded: true,     // this/these em laranja, that/those em azul
-    hintAfter: 5,          // segundos até mostrar o desenho como dica
-    speechRate: 0.8
+    hintAfter: 3,          // segundos até mostrar a dica (desenho + lado certo da loja)
+    cardFromStart: true,   // a cartinha certa (THIS / THAT) já aparece acesa
+    speechRate: 0.75
   },
   2: {
     title: 'Shop with Colours',
-    hearts: 4,
-    itemsPerOrder: 7,
-    itemSize: 64,
+    hearts: 6,
+    itemsPerOrder: 5,
+    itemSize: 76,
     useColours: true,
     colourCoded: true,
-    speechRate: 0.9
+    hintAfter: 4,
+    speechRate: 0.8
   },
   3: {
-    title: 'Question Blocks',
-    hearts: 3,
-    itemsPerOrder: 7,
-    itemSize: 62,
-    questions: true,       // ordens alternam com perguntas dos blocos
-    moving: true,          // plataformas de baixo se mexem
+    title: 'Big Shop',
+    hearts: 5,
+    itemsPerOrder: 5,
+    itemSize: 72,
+    moving: true,          // plataformas de baixo se mexem (devagar)
     contract: true,        // "That's a cap"
-    speechRate: 1.0
+    colourCoded: true,
+    hintAfter: 5,
+    speechRate: 0.9
   }
 };
 
 // Duas lojas diferentes; cada dupla joga numa delas, alternando.
 // Plataformas: { x, y, w } — dá para atravessar por baixo e pousar em cima.
 // Vagas (slots): onde as roupas aparecem. plat = índice da plataforma ou -1 (chão).
-// Blocos (Turma 3): ficam acima das plataformas altas para dar para alcançar.
 WR.LAYOUTS = [
   {
     name: 'Clothes Shop',
@@ -63,8 +65,7 @@ WR.LAYOUTS = [
       { plat: -1, x: 270 }, { plat: -1, x: 480 }, { plat: 0, x: 100 }, { plat: 1, x: 100 }, { plat: 2, x: 100 },
       { plat: -1, x: 820 }, { plat: -1, x: 1010 }, { plat: -1, x: 1190 }, { plat: 3, x: 100 }, { plat: 4, x: 110 },
       { plat: 5, x: 110 }, { plat: 6, x: 90 }, { plat: 7, x: 100 }
-    ],
-    blocks: [{ x: 205 }, { x: 405 }, { x: 735 }, { x: 1065 }]
+    ]
   },
   {
     name: 'Wardrobe',
@@ -82,30 +83,22 @@ WR.LAYOUTS = [
       { plat: -1, x: 250 }, { plat: -1, x: 500 }, { plat: 0, x: 110 }, { plat: 1, x: 95 }, { plat: 2, x: 95 },
       { plat: -1, x: 830 }, { plat: -1, x: 1020 }, { plat: -1, x: 1200 }, { plat: 3, x: 95 }, { plat: 4, x: 115 },
       { plat: 5, x: 130 }, { plat: 6, x: 95 }, { plat: 7, x: 95 }
-    ],
-    blocks: [{ x: 220 }, { x: 420 }, { x: 720 }, { x: 1070 }]
+    ]
   }
 ];
-
-WR.BLOCK_Y = 160;
-WR.BLOCK_W = 140;
-WR.BLOCK_H = 48;
 
 // Cria a fase pronta para jogar (cópia, para poder mexer nas plataformas).
 WR.makeLevel = function (index, turma) {
   var src = WR.LAYOUTS[index % WR.LAYOUTS.length];
   var cfg = WR.TURMAS[turma];
   var platforms = src.platforms.map(function (p, i) {
-    return { x: p.x, y: p.y, w: p.w, x0: p.x, range: cfg.moving ? (p.moves || 0) : 0, phase: i, dx: 0 };
+    return { x: p.x, y: p.y, w: p.w, x0: p.x, range: cfg.moving ? (p.moves || 0) / 2 : 0, phase: i, dx: 0 };
   });
   var slots = src.slots.map(function (s) {
     var absX = s.plat < 0 ? s.x : src.platforms[s.plat].x + s.x;
     return { plat: s.plat, x: s.x, zone: absX < WR.SPLIT_X ? 'here' : 'there' };
   });
-  var blocks = src.blocks.map(function (b) {
-    return { x: b.x, y: WR.BLOCK_Y, w: WR.BLOCK_W, h: WR.BLOCK_H, label: '', bump: 0, flash: 0, flashColor: '' };
-  });
-  return { name: src.name, platforms: platforms, slots: slots, blocks: blocks, time: 0 };
+  return { name: src.name, platforms: platforms, slots: slots, time: 0 };
 };
 
 WR.updateLevel = function (level, dt) {
