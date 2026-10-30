@@ -8,7 +8,6 @@
 
   function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
   function save(v) { try { localStorage.setItem(KEY, JSON.stringify(v)); } catch (e) { /* ignore */ } }
-  function getNum(k) { try { return Number(localStorage.getItem(k)) || 0; } catch (e) { return 0; } }
 
   var saved = load();
 
@@ -22,7 +21,7 @@
     }).join('');
   });
 
-  ['turma', 'players', 'time', 'goal'].forEach(function (name) {
+  ['turma', 'players', 'time'].forEach(function (name) {
     if (saved[name] === undefined) return;
     var input = form.querySelector('input[name="' + name + '"][value="' + saved[name] + '"]');
     if (input) input.checked = true;
@@ -31,7 +30,7 @@
 
   function values() {
     var v = {};
-    ['turma', 'players', 'time', 'goal', 'c1', 'c2'].forEach(function (name) {
+    ['turma', 'players', 'time', 'c1', 'c2'].forEach(function (name) {
       var el = form.querySelector('input[name="' + name + '"]:checked');
       v[name] = el ? el.value : '';
     });
@@ -39,20 +38,21 @@
     return v;
   }
 
+  // Mostra só o ranking da turma escolhida.
   function refreshProgress() {
     var v = values();
-    var total = getNum('wardrobeRun.class.' + v.turma);
-    document.getElementById('class-progress').textContent =
-      'Turma ' + v.turma + ': ' + total + ' / ' + v.goal + ' acertos' + (total >= Number(v.goal) ? ' 🏆' : '');
+    var turma = Number(v.turma);
+    document.getElementById('ranking-title').textContent = '🏆 Ranking das duplas · Turma ' + turma;
+    WR.Ranking.render(document.getElementById('ranking'), WR.Ranking.list(turma), { limit: 100 });
     document.querySelector('.swatches[data-player="2"]').style.opacity = v.players === '2' ? 1 : 0.35;
   }
 
   form.addEventListener('change', function () { save(values()); refreshProgress(); });
 
   document.getElementById('btn-reset').addEventListener('click', function () {
-    var t = values().turma;
-    if (!confirm('Zerar o placar da Turma ' + t + '?')) return;
-    try { localStorage.removeItem('wardrobeRun.class.' + t); } catch (e) { /* ignore */ }
+    var t = Number(values().turma);
+    if (!confirm('Apagar o ranking da Turma ' + t + '? As outras turmas não mudam.')) return;
+    WR.Ranking.reset(t);
     refreshProgress();
   });
 

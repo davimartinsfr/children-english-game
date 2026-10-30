@@ -75,7 +75,6 @@ a { color: var(--purple); }
 .swatch span { display: block; width: 34px; height: 34px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 2px #cfd8dc; cursor: pointer; }
 .swatch input:checked + span { box-shadow: 0 0 0 4px var(--ink); }
 
-.class-progress { font-size: 1.2em; font-weight: bold; margin: 0 0 8px; }
 .play { display: block; margin: 24px auto 8px; font-size: 2em; }
 .help ul { margin: 0; padding-left: 20px; line-height: 1.7; }
 
@@ -103,9 +102,32 @@ a { color: var(--purple); }
 .stars .off { color: #e0e0e0; }
 .score-line { font-size: 1.5em; font-weight: bold; margin: 0.3em 0; }
 .practiced ul { list-style: none; padding: 0; margin: 0.2em 0 0.6em; font-size: 1.2em; }
-.practiced ul.two-columns { columns: 2; }
 .practiced li { margin: 0.15em 0; }
-.class-goal .bar { height: 1em; background: #eceff1; border-radius: 1em; overflow: hidden; }
-.class-goal .fill { height: 100%; background: linear-gradient(90deg, #4fc3f7, #ffd54f); }
-.class-goal p { margin: 0.3em 0 0.8em; font-weight: bold; }
 .buttons { display: flex; gap: 1em; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+/* ---------- Nomes e ranking ---------- */
+.names { display: flex; gap: 1em; justify-content: center; flex-wrap: wrap; margin: 0.4em 0; }
+.names label { display: flex; flex-direction: column; align-items: flex-start; font-weight: bold; font-size: 1.1em; gap: 0.2em; }
+.names input {
+  font: inherit; font-size: 1.2em; width: 11em; padding: 0.35em 0.6em;
+  border: 3px solid #cfd8dc; border-radius: 0.6em; outline: none;
+}
+.names input:focus { border-color: var(--purple); }
+.error { color: #c62828; font-weight: bold; margin: 0.2em 0; }
+
+.rank-line { font-size: 1.3em; font-weight: bold; color: var(--purple); margin: 0.2em 0 0.6em; }
+.end-columns { display: flex; gap: 1.5em; text-align: left; align-items: flex-start; margin-bottom: 0.8em; }
+.end-columns > div { flex: 1 1 0; }
+.end-columns .practiced ul { font-size: 1em; }
+
+.ranking-list { list-style: none; padding: 0; margin: 0.3em 0 0.8em; }
+.ranking-list li {
+  display: grid; grid-template-columns: 2.4em 1fr auto; grid-template-areas: "pos names pts" "pos meta meta"; text-align: left;
+  align-items: center; padding: 0.3em 0.6em; border-radius: 0.6em; margin-bottom: 0.2em; background: #f5f5f5;
+}
+.ranking-list li.me { background: #fff3c4; outline: 2px solid #ffb300; }
+.ranking-list .pos { grid-area: pos; font-weight: bold; font-size: 1.2em; }
+.ranking-list .who { grid-area: names; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ranking-list .pts { grid-area: pts; font-weight: bold; color: #b28704; }
+.ranking-list .meta { grid-area: meta; font-size: 0.8em; color: var(--muted); }
+.ranking-empty { color: var(--muted); font-style: italic; }

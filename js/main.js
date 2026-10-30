@@ -18,8 +18,7 @@
     players: num('players', 2, [1, 2]),
     colors: [color('c1', '#e53935'), color('c2', '#1e88e5')],
     time: num('time', 90, [60, 90, 120]),
-    sayIt: params.get('sayit') === '1',
-    goal: num('goal', 50, [30, 50, 100])
+    sayIt: params.get('sayit') === '1'
   };
   var cfg = WR.TURMAS[opts.turma];
   WR.Audio.rate = cfg.speechRate;
@@ -30,8 +29,6 @@
     get: function (k) { try { return localStorage.getItem(k); } catch (e) { return memory[k]; } },
     set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) { memory[k] = v; } }
   };
-  var classKey = 'wardrobeRun.class.' + opts.turma;
-  var classInfo = { total: Number(store.get(classKey)) || 0, goal: opts.goal };
   var layout = Number(store.get('wardrobeRun.layout')) || 0;
 
   var canvas = document.getElementById('game');
@@ -63,21 +60,44 @@
       turma: opts.turma, players: opts.players, colors: opts.colors,
       time: opts.time, sayIt: opts.sayIt, layout: layout
     });
-    round.on('correct', function () {
-      classInfo.total++;
-      store.set(classKey, String(classInfo.total));
-    });
     round.on('end', showEnd);
     $('ready-subtitle').textContent = 'Turma ' + opts.turma + ' · ' + cfg.title + ' · Loja ' + (layout + 1);
     $('ready-controls').innerHTML = opts.players === 2
       ? '<span><b style="color:' + opts.colors[0] + '">Jogador 1</b>: A D andar · W pular · S descer</span>' +
         '<span><b style="color:' + opts.colors[1] + '">Jogador 2</b>: ← → andar · ↑ pular · ↓ descer</span>'
       : '<span><b style="color:' + opts.colors[0] + '">Jogador</b>: A D ou ← → andar · W ou ↑ pular</span>';
+    $('name1').value = '';
+    $('name2').value = '';
+    $('names-error').classList.add('hidden');
     show('overlay-ready');
+    $('name1').focus();
+  }
+
+  // Os nomes são obrigatórios: é assim que a dupla entra no ranking da turma.
+  function readNames() {
+    var inputs = opts.players === 2 ? [$('name1'), $('name2')] : [$('name1')];
+    var names = inputs.map(function (el) { return el.value.replace(/\s+/g, ' ').trim(); });
+    var empty = inputs.filter(function (el, i) { return !names[i]; })[0];
+    var error = '';
+    if (empty) {
+      error = opts.players === 2 ? 'Escreva o nome dos dois jogadores.' : 'Escreva o nome do jogador.';
+    } else if (names.length === 2 && names[0].toLowerCase() === names[1].toLowerCase()) {
+      error = 'Os dois nomes estão iguais. Escreva o nome de cada jogador.';
+      empty = inputs[1];
+    }
+    $('names-error').textContent = error;
+    $('names-error').classList.toggle('hidden', !error);
+    if (error) { empty.focus(); return null; }
+    return names;
   }
 
   function start() {
+    if (round.state !== 'ready') return;
+    var names = readNames();
+    if (!names) return;
+    if (document.activeElement) document.activeElement.blur();
     WR.Audio.unlock();
+    round.setNames(names);
     show(null);
     round.start();
   }
@@ -88,14 +108,20 @@
       return '<span class="' + (i <= res.stars ? 'on' : 'off') + '">★</span>';
     }).join('');
     $('end-score').textContent = '⭐ ' + res.score + ' pontos · ' + res.correct + (res.correct === 1 ? ' acerto' : ' acertos');
-    $('end-list').classList.toggle('two-columns', res.practiced.length > 4);
-    $('end-list').innerHTML = res.practiced.slice(-8).map(function (s) { return '<li>' + s + '</li>'; }).join('') ||
+    $('end-list').innerHTML = res.practiced.slice(-6).map(function (s) { return '<li>' + s + '</li>'; }).join('') ||
       '<li>—</li>';
-    var frac = Math.min(1, classInfo.total / classInfo.goal);
-    $('end-class-fill').style.width = (frac * 100) + '%';
-    $('end-class-text').textContent = frac >= 1
-      ? '🏆 A turma bateu a meta! ' + classInfo.total + ' / ' + classInfo.goal
-      : 'Meta da turma: ' + classInfo.total + ' / ' + classInfo.goal + ' acertos';
+
+    var saved = WR.Ranking.add(opts.turma, { names: round.names, score: res.score, correct: res.correct, time: opts.time });
+    var rank = '';
+    if (saved) {
+      rank = saved.position === 1 ? '🏆 1º lugar da Turma ' + opts.turma + '!'
+        : saved.position + 'º lugar de ' + saved.list.length + ' na Turma ' + opts.turma;
+      if (!saved.newBest) rank += ' (recorde de vocês: ⭐ ' + saved.previous.score + ')';
+      else if (saved.previous) rank += ' · novo recorde! 🎉';
+    }
+    $('end-rank').textContent = rank;
+    $('end-ranking-title').textContent = 'Ranking da Turma ' + opts.turma + ':';
+    WR.Ranking.render($('end-ranking'), saved ? saved.list : [], { limit: 5, highlight: saved && saved.key });
     show('overlay-end');
   }
 
@@ -127,10 +153,17 @@
   }
 
   $('btn-start').addEventListener('click', function () { this.blur(); start(); });
+  $('names-form').addEventListener('input', function () { $('names-error').classList.add('hidden'); });
+  $('names-form').addEventListener('submit', function (e) { e.preventDefault(); start(); });
   $('btn-next').addEventListener('click', function () { this.blur(); nextPair(); });
 
   window.addEventListener('keydown', function (e) {
     if (e.repeat) return;
+    // digitando um nome: as teclas são do campo, não do jogo
+    if (e.target && e.target.tagName === 'INPUT') {
+      if (e.code === 'Enter' || e.code === 'NumpadEnter') { e.preventDefault(); start(); }
+      return;
+    }
     switch (e.code) {
       case 'Enter':
       case 'NumpadEnter':
@@ -153,7 +186,7 @@
   });
 
   // Para os testes automáticos poderem olhar o estado do jogo.
-  WR.debug = { get round() { return round; }, classInfo: classInfo, start: start, nextPair: nextPair };
+  WR.debug = { get round() { return round; }, start: start, nextPair: nextPair };
 
   var STEP = 1 / 60;
   var last = performance.now(), acc = 0, clock = 0;
@@ -167,7 +200,7 @@
       acc -= STEP;
     }
     ctx.setTransform(canvas.width / WR.W, 0, 0, canvas.height / WR.H, 0, 0);
-    WR.draw(ctx, round, clock, classInfo);
+    WR.draw(ctx, round, clock);
     requestAnimationFrame(frame);
   }
 

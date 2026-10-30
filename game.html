@@ -14,11 +14,18 @@
       <div class="card">
         <h1>👕 Wardrobe Run</h1>
         <p class="subtitle" id="ready-subtitle"></p>
+        <form id="names-form" class="names" autocomplete="off">
+          <label id="name1-wrap"><span id="name1-label">Jogador 1</span>
+            <input id="name1" maxlength="16" placeholder="Nome" spellcheck="false"></label>
+          <label id="name2-wrap"><span id="name2-label">Jogador 2</span>
+            <input id="name2" maxlength="16" placeholder="Nome" spellcheck="false"></label>
+        </form>
+        <p id="names-error" class="error hidden"></p>
         <div class="controls-help" id="ready-controls"></div>
         <p class="hint">Ouçam a vendedora e peguem a roupa certa!<br>
           <b class="here">this / these</b> = perto dela (HERE) &nbsp;·&nbsp;
           <b class="there">that / those</b> = longe (OVER THERE)</p>
-        <button class="big-btn" id="btn-start">▶ Dupla pronta! (ENTER)</button>
+        <button class="big-btn" id="btn-start">▶ Começar (ENTER)</button>
         <p class="small"><a href="index.html">← Voltar ao menu</a></p>
       </div>
     </div>
@@ -36,13 +43,16 @@
         <h1 id="end-title">Time's up!</h1>
         <div class="stars" id="end-stars"></div>
         <p class="score-line" id="end-score"></p>
-        <div class="practiced">
-          <p class="small">Frases praticadas:</p>
-          <ul id="end-list"></ul>
-        </div>
-        <div class="class-goal">
-          <div class="bar"><div class="fill" id="end-class-fill"></div></div>
-          <p id="end-class-text"></p>
+        <p class="rank-line" id="end-rank"></p>
+        <div class="end-columns">
+          <div class="practiced">
+            <p class="small">Frases praticadas:</p>
+            <ul id="end-list"></ul>
+          </div>
+          <div class="end-ranking">
+            <p class="small" id="end-ranking-title"></p>
+            <div id="end-ranking"></div>
+          </div>
         </div>
         <div class="buttons">
           <button class="big-btn" id="btn-next">▶ Próxima dupla (ENTER)</button>
@@ -59,6 +69,7 @@
   <script src="js/levels.js"></script>
   <script src="js/engine.js"></script>
   <script src="js/round.js"></script>
+  <script src="js/ranking.js"></script>
   <script src="js/draw.js"></script>
   <script src="js/main.js"></script>
 </body>
