@@ -127,6 +127,7 @@ window.WR = window.WR || {};
     this.shake = 0;
     this.phase = this.phaseFor(0);
     this.listeners = {};
+    this.names = [];
   };
 
   var R = WR.Round.prototype;
@@ -137,6 +138,11 @@ window.WR = window.WR || {};
   R.phaseFor = function (correct) {
     if (!this.cfg.phases) return 'all';
     return correct < 4 ? 'vocab' : correct < 8 ? 'singular' : 'all';
+  };
+
+  R.setNames = function (names) {
+    this.names = names.slice();
+    this.players.forEach(function (p, i) { p.name = names[i] || ''; });
   };
 
   R.start = function () {

@@ -19,19 +19,19 @@ O jogo **não precisa de internet**.
    - **Turma** (1, 2 ou 3);
    - **Dupla** ou **1 jogador** (para quando sobrar um aluno);
    - **cor** de cada jogador;
-   - **tempo** por dupla (90 s é um bom começo);
-   - **Meta da turma**: quantos acertos a turma toda precisa somar.
+   - **tempo** por dupla (90 s é um bom começo).
 3. Clique em **JOGAR**. Aperte **F** para tela cheia.
-4. Chame a primeira dupla para o teclado. Com a tela "Dupla pronta!" aberta, aperte **ENTER**.
-5. Quando o tempo acabar, aparece o resultado com estrelas e as frases praticadas. Leia as frases em voz alta com a turma.
-6. Aperte **ENTER** para a **próxima dupla**. A loja muda a cada dupla.
+4. Chame a primeira dupla para o teclado. Na tela de início, **escreva o nome de cada jogador** (é obrigatório) e aperte **ENTER**.
+   - Jogador 1 joga com A/D/W, Jogador 2 com as setas: o nome escrito em cada campo aparece em cima do personagem.
+5. Quando o tempo acabar, aparece o resultado com estrelas, as frases praticadas e a **posição da dupla no ranking da turma**. Leia as frases em voz alta com a turma.
+6. Aperte **ENTER** para a **próxima dupla**. Os campos de nome ficam vazios de novo e a loja muda.
 
 Com 16 alunos são 8 duplas de 90 segundos: cerca de 15 minutos.
 
 ## Como envolver a turma toda
 
 - **Quem está esperando ajuda:** a turma pode gritar "HERE!" ou "OVER THERE!" para ajudar a dupla.
-- **Meta da turma:** os acertos de todas as duplas somam na barra "Class goal". A turma joga junto contra a meta, não uma dupla contra a outra.
+- **Ranking das duplas:** cada dupla vê sua posição no fim da rodada. Dá para chamar uma dupla de novo para tentar subir no ranking.
 - **Modo "Say it!"** (marque no menu): depois de cada acerto, o jogo para e mostra a frase ("Those are boots!").
   - A dupla, ou a turma toda, fala em voz alta.
   - Você aperta **ENTER** se falaram certo (+5 pontos).
@@ -62,9 +62,15 @@ Com 16 alunos são 8 duplas de 90 segundos: cerca de 15 minutos.
 - **Turma 3:** vocabulário completo da Sarah e do Mark, plataformas que se mexem e **perguntas com blocos**.
   - Uma roupa pisca e a dupla bate a cabeça no bloco certo: **THIS IS / THESE ARE / THAT'S / THOSE ARE**.
 
-## Placar da turma
+## Ranking das duplas
 
-O placar fica guardado no navegador daquele computador, separado por turma. Para começar do zero, use **"Zerar placar desta turma"** no menu.
+- **Cada turma tem o seu próprio ranking**, e elas nunca se misturam: uma dupla da Turma 1 nunca aparece no ranking da Turma 2.
+- O ranking é ordenado por pontos; em caso de empate, ganha quem tem mais acertos.
+- **Cada dupla aparece uma vez só**, com o seu **melhor** resultado. "Ana & Bia" e "Bia & Ana" contam como a mesma dupla (maiúsculas e minúsculas não importam). Se a dupla jogar de novo e fizer menos pontos, o recorde dela continua.
+- Escreva os nomes sempre do mesmo jeito (por exemplo, sempre "Ana" e não "Ana Clara" numa aula e "Ana" na outra), senão vira outra dupla.
+- O ranking mostra o tempo da rodada (60, 90 ou 120 s). Para ser justo, use o mesmo tempo para todas as duplas da turma.
+- No menu, o ranking da turma escolhida aparece embaixo das opções. Para começar do zero, use **"Zerar ranking desta turma"**: só aquela turma é apagada.
+- O ranking fica guardado no navegador daquele computador. Num outro computador o ranking começa vazio.
 
 ## Problemas comuns
 

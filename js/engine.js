@@ -14,6 +14,7 @@ WR.Input = (function () {
   var BLOCK_DEFAULT = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space', 'Backspace'];
 
   window.addEventListener('keydown', function (e) {
+    if (e.target && e.target.tagName === 'INPUT') return; // escrevendo um nome
     if (BLOCK_DEFAULT.indexOf(e.code) >= 0) e.preventDefault();
     if (!down[e.code]) pressed[e.code] = true;
     down[e.code] = true;

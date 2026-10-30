@@ -260,16 +260,18 @@ window.WR = window.WR || {};
     ctx.arc(cx + p.facing * 4 - 4, y + 15, 2.6, 0, Math.PI * 2);
     ctx.arc(cx + p.facing * 4 + 5, y + 15, 2.6, 0, Math.PI * 2);
     ctx.fill();
-    // número do jogador
+    // nome do jogador (ou número, antes de começar)
+    var label = p.name ? (p.name.length > 10 ? p.name.slice(0, 9) + '…' : p.name) : String(p.index + 1);
+    ctx.font = font(15);
+    var lw = Math.max(24, ctx.measureText(label).width + 14);
     ctx.fillStyle = p.color;
-    rr(ctx, cx - 12, y - 28, 24, 22, 6);
+    rr(ctx, cx - lw / 2, y - 28, lw, 22, 6);
     ctx.fill();
     ctx.stroke();
     ctx.fillStyle = '#fff';
-    ctx.font = font(15);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(String(p.index + 1), cx, y - 16);
+    ctx.fillText(label, cx, y - 16);
     ctx.restore();
   }
 
@@ -352,7 +354,7 @@ window.WR = window.WR || {};
 
   var PHASE_LABEL = { vocab: 'Phase 1: words', singular: 'Phase 2: this / that', all: 'Phase 3: all' };
 
-  function drawHUD(ctx, round, classInfo) {
+  function drawHUD(ctx, round) {
     ctx.fillStyle = '#263238';
     ctx.fillRect(0, 0, WR.W, 56);
     for (var i = 0; i < round.cfg.hearts; i++) drawHeart(ctx, 14 + i * 36, 12, 32, i < round.hearts);
@@ -387,19 +389,16 @@ window.WR = window.WR || {};
       ctx.fillText('combo x' + round.combo, 960, 29);
     }
 
-    // meta da turma
-    var cx = 1070, cw = 190;
-    var cf = Math.min(1, classInfo.total / classInfo.goal);
-    ctx.fillStyle = 'rgba(255,255,255,0.15)';
-    rr(ctx, cx, 30, cw, 14, 7);
-    ctx.fill();
-    ctx.fillStyle = cf >= 1 ? '#ffd54f' : '#4fc3f7';
-    rr(ctx, cx, 30, Math.max(14, cw * cf), 14, 7);
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = font(14);
-    ctx.textAlign = 'center';
-    ctx.fillText('Class goal: ' + classInfo.total + ' / ' + classInfo.goal, cx + cw / 2, 16);
+    // nomes da dupla
+    if (round.names.length) {
+      var who = round.names.join(' & ');
+      var size = 20;
+      ctx.font = font(size);
+      while (ctx.measureText(who).width > 210 && size > 12) { size--; ctx.font = font(size); }
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#fff';
+      ctx.fillText(who, WR.W - 18, 29);
+    }
   }
 
   function drawOrder(ctx, round) {
@@ -470,7 +469,7 @@ window.WR = window.WR || {};
     ctx.restore();
   }
 
-  WR.draw = function (ctx, round, t, classInfo) {
+  WR.draw = function (ctx, round, t) {
     ctx.save();
     if (round.shake > 0) ctx.translate((Math.random() - 0.5) * 14 * round.shake / 0.3, (Math.random() - 0.5) * 10 * round.shake / 0.3);
     drawBackground(ctx, round);
@@ -499,7 +498,7 @@ window.WR = window.WR || {};
     });
     ctx.restore();
 
-    drawHUD(ctx, round, classInfo);
+    drawHUD(ctx, round);
     drawOrder(ctx, round);
     drawBanner(ctx, round);
     drawSayIt(ctx, round);

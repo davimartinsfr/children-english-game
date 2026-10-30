@@ -11,7 +11,7 @@ O vocabulário vem das folhas de atividade da aula "Clothes and Demonstratives" 
 - Uma **vendedora** fica no lado esquerdo da tela e dá ordens: *"Bring me **those** boots!"*. Ela também fala as ordens em voz alta.
 - Tudo o que está **perto dela (HERE ✋)** é **this/these**. Tudo o que está **longe (OVER THERE 👉)** é **that/those**.
 - Duas crianças jogam **juntas**, no mesmo teclado, pegando a roupa certa. Se pegarem a errada, perdem um coração e o jogo explica o erro.
-- Cada dupla joga **90 segundos**. Depois é a vez da **próxima dupla**. Os acertos de todo mundo somam na **meta da turma**.
+- Cada dupla joga **90 segundos**. Depois é a vez da **próxima dupla**. Antes de jogar, cada dupla **escreve os nomes**, e o resultado entra no **ranking das duplas da turma**. Cada turma tem o seu ranking, sem misturar.
 
 | Turma | Modo | O que pratica |
 |---|---|---|
@@ -64,6 +64,7 @@ js/engine.js          controles (teclado/controle) e física
 js/round.js           regras da rodada (ordens, pegadinhas, pontos, corações)
 js/draw.js            desenho no canvas
 js/audio.js           voz (speechSynthesis) e efeitos sonoros (Web Audio)
+js/ranking.js         ranking das duplas, separado por turma
 js/main.js            loop da tela do jogo e telas sobrepostas
 js/menu.js            menu
 ```

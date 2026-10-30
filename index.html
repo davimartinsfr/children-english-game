@@ -59,18 +59,12 @@
         </div>
       </section>
 
-      <section class="row">
-        <div>
-          <h2>4. Meta da turma (acertos somados)</h2>
-          <label class="pill"><input type="radio" name="goal" value="30"><span>30</span></label>
-          <label class="pill"><input type="radio" name="goal" value="50" checked><span>50</span></label>
-          <label class="pill"><input type="radio" name="goal" value="100"><span>100</span></label>
-        </div>
-        <div>
-          <h2>Placar da turma</h2>
-          <p id="class-progress" class="class-progress"></p>
-          <button type="button" class="btn-secondary" id="btn-reset">↺ Zerar placar desta turma</button>
-        </div>
+      <section>
+        <h2 id="ranking-title">🏆 Ranking das duplas</h2>
+        <p class="small">Cada turma tem o seu próprio ranking. Antes de jogar, cada dupla escreve os nomes.
+          Cada dupla aparece uma vez, com o seu melhor resultado.</p>
+        <div id="ranking"></div>
+        <button type="button" class="btn-secondary" id="btn-reset">↺ Zerar ranking desta turma</button>
       </section>
 
       <button type="submit" class="big-btn play">▶ JOGAR</button>
@@ -89,6 +83,7 @@
     </section>
   </main>
 
+  <script src="js/ranking.js"></script>
   <script src="js/menu.js"></script>
 </body>
 </html>
