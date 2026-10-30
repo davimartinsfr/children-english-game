@@ -1,73 +1,73 @@
 # 👕 Wardrobe Run: Clothes & Demonstratives
 
-A cooperative platform game for practicing English vocabulary (**clothes**) and the **demonstratives** (*this, that, these, those*) with children from 6 to 15.
+Jogo de plataforma cooperativo para praticar vocabulário de inglês (**clothes**) e os **demonstratives** (*this, that, these, those*) com crianças de 6 a 15 anos.
 
-The vocabulary comes from the activity sheets for the "Clothes and Demonstratives" lesson of Turmas 1, 2 and 3 (Centro Comunitário Sal da Terra).
+O vocabulário vem das folhas de atividade da aula "Clothes and Demonstratives" das Turmas 1, 2 e 3 (Centro Comunitário Sal da Terra).
 
 ![Turma 1: "I want these hats!"](docs/img/turma1.png)
 
-## How it works
+## Como funciona
 
-- A **shop assistant** stands on the left side of the screen and gives orders: *"Bring me **those** boots!"*. She speaks them aloud too.
-- Everything **near her (HERE ✋)** takes **this/these**. Everything **far away (OVER THERE 👉)** takes **that/those**.
-- Two children play **together**, on the same keyboard, picking up the right item. If they grab the wrong one, they lose a heart and the game explains the mistake.
-- Each pair plays for **90 seconds**. Then it's the **next pair's** turn. Everyone's correct answers add up to the **class goal**.
+- Uma **vendedora** fica no lado esquerdo da tela e dá ordens: *"Bring me **those** boots!"*. Ela também fala as ordens em voz alta.
+- Tudo o que está **perto dela (HERE ✋)** é **this/these**. Tudo o que está **longe (OVER THERE 👉)** é **that/those**.
+- Duas crianças jogam **juntas**, no mesmo teclado, pegando a roupa certa. Se pegarem a errada, perdem um coração e o jogo explica o erro.
+- Cada dupla joga **90 segundos**. Depois é a vez da **próxima dupla**. Os acertos de todo mundo somam na **meta da turma**.
 
-| Turma | Mode | What it practices |
+| Turma | Modo | O que pratica |
 |---|---|---|
-| 1 | Clothes Shop | Words first (*Get the hat!*), then *this/that*, then all four. Picture hint. |
-| 2 | Shop with Colours | Colours + demonstratives (*I like those red shoes!*) |
-| 3 | Question Blocks | Full vocabulary, moving platforms, and blocks **THIS IS / THESE ARE / THAT'S / THOSE ARE** |
+| 1 | Clothes Shop | Primeiro só as palavras (*Get the hat!*), depois *this/that*, depois os quatro. Dica com desenho. |
+| 2 | Shop with Colours | Cores + demonstratives (*I like those red shoes!*) |
+| 3 | Question Blocks | Vocabulário completo, plataformas que se mexem e blocos **THIS IS / THESE ARE / THAT'S / THOSE ARE** |
 
 | Turma 2 | Turma 3 |
 |---|---|
 | ![Turma 2](docs/img/turma2.png) | ![Turma 3](docs/img/turma3.png) |
 
-## How to open it (no installation, no internet)
+## Como abrir (sem instalar nada, sem internet)
 
-1. On this GitHub page, click the green **Code** button → **Download ZIP**.
-2. Extract the ZIP file (right-click → "Extrair tudo").
-3. Open the folder and **double-click `index.html`**. It opens in Chrome or Edge.
+1. Nesta página do GitHub, clique no botão verde **Code** → **Download ZIP**.
+2. Extraia o arquivo ZIP (botão direito → "Extrair tudo").
+3. Abra a pasta e dê **dois cliques em `index.html`**. Ele abre no Chrome ou no Edge.
 
-That's it. The game works **offline**, so you can download it at home and take it to class on the laptop or a USB stick.
+Pronto. O jogo funciona **offline**: dá para baixar em casa e levar para a aula no notebook ou num pen drive.
 
-> Tip: connect the computer to the projector/TV and press **F** in the game to go full screen.
+> Dica: ligue o computador no projetor/TV e aperte **F** no jogo para ficar em tela cheia.
 
-## Controls
+## Controles
 
-| Who | Keys |
+| Quem | Teclas |
 |---|---|
-| Player 1 | **A / D** move · **W** jump · **S** drop down from a platform |
-| Player 2 | **← / →** move · **↑** jump · **↓** drop down from a platform |
-| Teacher | **ENTER** start / next pair · **SPACE** pause · **R** repeat the sentence · **N** skip the order · **M** voice on/off · **F** full screen · **ESC** menu |
+| Jogador 1 | **A / D** andar · **W** pular · **S** descer da plataforma |
+| Jogador 2 | **← / →** andar · **↑** pular · **↓** descer da plataforma |
+| Professora | **ENTER** começar / próxima dupla · **ESPAÇO** pausar · **R** repetir a frase · **N** pular a ordem · **M** voz liga/desliga · **F** tela cheia · **ESC** menu |
 
-USB game controllers also work.
+Controles de videogame USB também funcionam.
 
-## Documentation
+## Documentação
 
-- [docs/COMO-USAR.md](docs/COMO-USAR.md): step-by-step guide for class (setup, rotating pairs, "Say it!" mode).
-- [docs/EDITAR-VOCABULARIO.md](docs/EDITAR-VOCABULARIO.md): how to add or change words.
+- [docs/COMO-USAR.md](docs/COMO-USAR.md): guia passo a passo para a aula (preparação, rodízio de duplas, modo "Say it!").
+- [docs/EDITAR-VOCABULARIO.md](docs/EDITAR-VOCABULARIO.md): como adicionar ou trocar palavras.
 
-## For whoever is going to change the code
+## Para quem for mexer no código
 
-Plain HTML + CSS + JavaScript. No frameworks, no build step, no dependencies. The scripts are classic `<script>` tags (no ES modules or `fetch`), so the game runs straight from `file://`.
+HTML + CSS + JavaScript puro. Sem frameworks, sem etapa de build, sem dependências. Os scripts são tags `<script>` clássicas (sem ES modules nem `fetch`), então o jogo roda direto pelo `file://`.
 
 ```
-index.html            menu (turma, players, options)
-game.html             game screen
+index.html            menu (turma, jogadores, opções)
+game.html             tela do jogo
 css/style.css
-js/vocabulary.js      vocabulary by turma (editable)
-js/sentences.js       all sentences: orders, correct answers, error feedback
-js/clothes-art.js     clothing drawings (SVG generated in code, recolorable)
-js/levels.js          turma settings and platform layouts
-js/engine.js          controls (keyboard/gamepad) and physics
-js/round.js           round rules (orders, decoys, points, hearts)
-js/draw.js            canvas rendering
-js/audio.js           voice (speechSynthesis) and sound effects (Web Audio)
-js/main.js            game screen loop and overlays
+js/vocabulary.js      vocabulário por turma (editável)
+js/sentences.js       todas as frases: ordens, acertos, explicação dos erros
+js/clothes-art.js     desenhos das roupas (SVG gerado no código, com troca de cor)
+js/levels.js          configuração das turmas e layout das plataformas
+js/engine.js          controles (teclado/controle) e física
+js/round.js           regras da rodada (ordens, pegadinhas, pontos, corações)
+js/draw.js            desenho no canvas
+js/audio.js           voz (speechSynthesis) e efeitos sonoros (Web Audio)
+js/main.js            loop da tela do jogo e telas sobrepostas
 js/menu.js            menu
 ```
 
-## License
+## Licença
 
-MIT. See [LICENSE](LICENSE).
+MIT. Veja [LICENSE](LICENSE).
